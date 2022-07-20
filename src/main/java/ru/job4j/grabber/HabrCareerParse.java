@@ -35,10 +35,23 @@ public class HabrCareerParse {
                         .first()
                         .child(0)
                         .attr("datetime"));
-                String link = String.format("%s%s %s", SOURCE_LINK,
-                        linkElement.attr("href"), date.format(formatter));
-                System.out.printf("%s %s%n", vacancyName, link);
+                String link = String.format("%s%s", SOURCE_LINK, linkElement.attr("href"));
+                System.out.printf("%s %s %s%n", vacancyName, link, date.format(formatter));
+                System.out.println(retrieveDescription(link));
             });
         }
+    }
+
+    private static String retrieveDescription(String link) {
+        String rsl = "";
+        Connection connection = Jsoup.connect(link);
+        Document document;
+        try {
+            document = connection.get();
+            rsl = document.select(".collapsible-description__content").toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return rsl;
     }
 }
