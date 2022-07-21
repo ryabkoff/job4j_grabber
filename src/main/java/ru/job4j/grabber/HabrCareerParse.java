@@ -48,7 +48,7 @@ public class HabrCareerParse {
         Document document;
         try {
             document = connection.get();
-            rsl = document.select(".collapsible-description__content").toString();
+            rsl = document.select(".collapsible-description__content").text();
         } catch (IOException e) {
             e.printStackTrace();
         }
