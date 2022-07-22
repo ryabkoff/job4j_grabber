@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS post(
-    id serial,
+    id serial primary key,
     name varchar(250),
     link text,
     text text,
     created timestamp,
-    PRIMARY KEY(id, link)
+    UNIQUE(link)
 );

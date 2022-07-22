@@ -2,7 +2,6 @@ package ru.job4j.grabber;
 
 import ru.job4j.quartz.AlertRabbit;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -30,7 +29,11 @@ public class PsqlStore implements Store, AutoCloseable {
     public void save(Post post) {
         try (PreparedStatement ps = cnn.prepareStatement(
                 "INSERT INTO post(name, link, text, created) "
-                        + "VALUES(?, ?, ?, ?) ")) {
+                        + "VALUES(?, ?, ?, ?) "
+                        + "ON CONFLICT(link) DO UPDATE SET "
+                        + "name = EXCLUDED.name, "
+                        + "text = EXCLUDED.text, "
+                        + "created = EXCLUDED.created")) {
             ps.setString(1, post.getTitle());
             ps.setString(2, post.getLink());
             ps.setString(3, post.getDescription());
@@ -92,7 +95,7 @@ public class PsqlStore implements Store, AutoCloseable {
         Properties properties = new Properties();
         try (InputStream in = AlertRabbit.class
                 .getClassLoader()
-                .getResourceAsStream("grabber.properties")) {
+                .getResourceAsStream("app.properties")) {
             properties.load(in);
         } catch (Exception e) {
             e.printStackTrace();
