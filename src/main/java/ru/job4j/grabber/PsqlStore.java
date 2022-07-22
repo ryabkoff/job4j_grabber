@@ -67,7 +67,7 @@ public class PsqlStore implements Store, AutoCloseable {
                         + "WHERE id = ?")) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
+            if (rs.next()) {
                 post = createPostByResultSet(rs);
             }
         } catch (Exception e) {
@@ -104,21 +104,21 @@ public class PsqlStore implements Store, AutoCloseable {
     }
 
     public static void main(String[] args) throws Exception {
-        PsqlStore ps = new PsqlStore(readProperties());
-        ps.save(new Post("Junior java developer",
-                "https://career.habr.com/vacancies/1000103321",
-                "Смузи и вкусняшки на кухне",
-                LocalDateTime.of(2022, 1, 1, 0, 0)));
-        ps.save(new Post("Middle java developer",
-                "https://career.habr.com/vacancies/1000103322",
-                "Профессиональный и карьерный рост",
-                LocalDateTime.of(2022, 2, 1, 0, 0)));
-        ps.save(new Post("Senior java developer",
-                "https://career.habr.com/vacancies/1000107499",
-                "Архитектура и оптимизация",
-                LocalDateTime.of(2022, 3, 1, 0, 0)));
-        ps.getAll().forEach(System.out::println);
-        System.out.println(ps.findById(3));
-        ps.close();
+        try (PsqlStore ps = new PsqlStore(readProperties())) {
+            ps.save(new Post("Junior java developer",
+                    "https://career.habr.com/vacancies/1000103321",
+                    "Смузи и вкусняшки на кухне",
+                    LocalDateTime.of(2022, 1, 1, 0, 0)));
+            ps.save(new Post("Middle java developer",
+                    "https://career.habr.com/vacancies/1000103322",
+                    "Профессиональный и карьерный рост",
+                    LocalDateTime.of(2022, 2, 1, 0, 0)));
+            ps.save(new Post("Senior java developer",
+                    "https://career.habr.com/vacancies/1000107499",
+                    "Архитектура и оптимизация",
+                    LocalDateTime.of(2022, 3, 1, 0, 0)));
+            ps.getAll().forEach(System.out::println);
+            System.out.println(ps.findById(3));
+        }
     }
 }
